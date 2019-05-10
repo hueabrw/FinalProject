@@ -10,6 +10,9 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
+        APIConsumer api = new APIConsumer();
+        api.Consume();
+
         Parent root = FXMLLoader.load(getClass().getResource("login.fxml"));
         primaryStage.setTitle("Developers Playground");
         primaryStage.setScene(new Scene(root, 630, 580));

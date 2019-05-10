@@ -2,6 +2,10 @@ package sample;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import com.teamdev.jxbrowser.chromium.InputEventsHandler;
+import com.teamdev.jxbrowser.chromium.JSValue;
+import javafx.scene.input.MouseEvent;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.*;
 

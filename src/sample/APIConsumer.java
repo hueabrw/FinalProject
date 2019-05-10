@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.file.DirectoryStream;
 import java.util.ArrayList;
 
 
@@ -61,9 +62,11 @@ public class APIConsumer{
 
         //System.out.println(storedData.toJSONString());
 
-        File jsonfile = new File("test.json");
+        File jsonfile = new File(".\\src\\sample\\test.json");
         FileOutputStream writer = new FileOutputStream(jsonfile);
         writer.write(storedData.toJSONString().getBytes());
+        writer.flush();
+        writer.close();
 
     }
 
@@ -74,11 +77,11 @@ public class APIConsumer{
         JSONArray coords = new JSONArray();
         for(int i = 0; i < parcel.points.length; i ++){
             JSONObject tempObj = new JSONObject();
-            tempObj.put("lat", parcel.points[i].GetLat() + "");
-            tempObj.put("lng", parcel.points[i].GetLng() + "");
+            tempObj.put("lat", parcel.points[i].GetLat());
+            tempObj.put("lng", parcel.points[i].GetLng());
             coords.add(tempObj);
         }
-        parcelData.put("sample.Coord", coords);
+        parcelData.put("Coord", coords);
 
         return parcelData;
     }
