@@ -33,17 +33,51 @@ public class DeveloperPageController implements Initializable{
 
     @FXML
     private BrowserView browserView;
+    Browser browser;
 
     @Override
     public void initialize(URL url, ResourceBundle rb){
-        Browser browser = browserView.getBrowser();
-        BrowserInitializer bi = new BrowserInitializer(browser);
-        bi.initialize();
+        browser = browserView.getBrowser();
+        browser.loadURL("file:C:/code/Java/FinalProject/src/sample/googlemaps.html");
+        run();
 
     }
 
-    public void onPolyClick(){
-        System.out.println("worked");
+    public void run(){
+        browser.addConsoleListener(new ConsoleListener() {
+            public void onMessage(ConsoleEvent event) {
+                System.out.println("Level: " + event.getLevel());
+                System.out.println("Message: " + event.getMessage());
+            }
+        });
+        try {
+            InputStream is = new FileInputStream("C:/code/Java/FinalProject/src/sample/test.json");
+
+            BufferedReader buf = new BufferedReader(new InputStreamReader(is));
+            String line = buf.readLine(); StringBuilder sb = new StringBuilder();
+
+            while(line != null){
+                sb.append(line).append("\n");
+                line = buf.readLine();
+            }
+
+            String fileAsString = sb.toString();
+
+
+            browser.addScriptContextListener(new ScriptContextAdapter() {
+                @Override
+                public void onScriptContextCreated(ScriptContextEvent event) {
+                    JSValue window = browser.executeJavaScriptAndReturnValue("window");
+                    window.asObject().setProperty("jsonData", fileAsString);
+                    window.asObject().setProperty("PolyInteract", new BrowserInitializer());
+
+                }
+
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 

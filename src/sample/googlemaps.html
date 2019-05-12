@@ -206,8 +206,8 @@
                   strokeWeight: 2,
                   geodesic: true
                 });
-                polygon.addListener('click', function() {
-                  window.onPolyClick();
+                polygon.addListener('click', function(event) {
+                  window.PolyInteract.onPolyClick(event.latLng);
                 });
             }
 
