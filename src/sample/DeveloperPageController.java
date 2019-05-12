@@ -5,10 +5,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import com.teamdev.jxbrowser.chromium.*;
-import com.teamdev.jxbrowser.chromium.events.ConsoleEvent;
-import com.teamdev.jxbrowser.chromium.events.ConsoleListener;
-import com.teamdev.jxbrowser.chromium.events.FinishLoadingEvent;
-import com.teamdev.jxbrowser.chromium.events.LoadAdapter;
+import com.teamdev.jxbrowser.chromium.events.*;
 import javafx.scene.input.MouseEvent;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.*;
@@ -40,39 +37,14 @@ public class DeveloperPageController implements Initializable{
     @Override
     public void initialize(URL url, ResourceBundle rb){
         Browser browser = browserView.getBrowser();
-        browser.addConsoleListener(new ConsoleListener() {
-            public void onMessage(ConsoleEvent event) {
-                System.out.println("Level: " + event.getLevel());
-                System.out.println("Message: " + event.getMessage());
-            }
-        });
-        try {
-            InputStream is = new FileInputStream("C:/code/Java/FinalProject/src/sample/test.json");
-
-            BufferedReader buf = new BufferedReader(new InputStreamReader(is));
-            String line = buf.readLine(); StringBuilder sb = new StringBuilder();
-
-            while(line != null){
-                sb.append(line).append("\n");
-                line = buf.readLine();
-            }
-
-            String fileAsString = sb.toString();
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-
-
-
+        BrowserInitializer bi = new BrowserInitializer(browser);
+        bi.initialize();
 
     }
 
-    public void loadURL(ActionEvent actionEvent) {
-
-
-        browserView.getBrowser().loadURL("file:googlemaps.html");
+    public void onPolyClick(){
+        System.out.println("worked");
     }
+
+
 }
