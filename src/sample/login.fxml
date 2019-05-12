@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="580.0" prefWidth="630.0" xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.LoginController">
+   <children>
+      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="139.0" layoutY="69.0" text="Developers Playground" textAlignment="CENTER">
+         <font>
+            <Font name="HoloLens MDL2 Assets" size="45.0" />
+         </font>
+      </Label>
+      <ImageView fitHeight="75.0" fitWidth="85.0" layoutX="37.0" layoutY="58.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../images/SkylineLogo.png" />
+         </image>
+      </ImageView>
+  <AnchorPane layoutX="160.0" layoutY="169.0" minHeight="0.0" minWidth="0.0" prefHeight="333.0" prefWidth="310.0">
+         <children>
+            <TextField fx:id="username" layoutX="13.0" layoutY="58.0" prefHeight="39.0" prefWidth="274.0" promptText="Username">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </TextField>
+            <PasswordField fx:id="password" layoutX="14.0" layoutY="128.0" prefHeight="38.0" prefWidth="272.0" promptText="Password" />
+            <Button fx:id="login" layoutX="155.0" layoutY="254.0" mnemonicParsing="false" onAction="#handleLoginSubmit" prefHeight="34.0" prefWidth="133.0" text="Login" />
+            <ComboBox fx:id="user_type" layoutX="136.0" layoutY="198.0" prefWidth="150.0" visibleRowCount="2" />
+            <Label fx:id="error_text" alignment="CENTER" contentDisplay="CENTER" layoutX="14.0" layoutY="24.0" text="Error" textAlignment="CENTER" textFill="#f00000" visible="false" wrapText="true" />
+         </children>
+      </AnchorPane>
+   </children>
+</Pane>

@@ -192,57 +192,88 @@
             }
           ]
         });
+        function readTextFile(file, callback) {
+            var rawFile = new XMLHttpRequest();
+            rawFile.overrideMimeType("application/json");
+            rawFile.open("GET", file, true);
+            rawFile.onreadystatechange = function() {
+                if (rawFile.readyState === 4 && rawFile.status == "200") {
+                    callback(rawFile.responseText);
+                }
+            }
+            rawFile.send(null);
+        }
 
-        $.getJSON("test.json", function(json) {
+        //usage:
+        readTextFile("http://192.168.233.144:80/test.json", function(text){
+            var data = JSON.parse(text);
+            for(var i = 0; i < data.length; i++){
+                var polyg = data[i].Coord;
+
+                var polygon = new google.maps.Polygon({
+                  map: map,
+                  path: polyg,
+                  geodesic: true,
+                  strokeColor: '#FF0000',
+                  strokeOpacity: 1.0,
+                  strokeWeight: 2,
+                  geodesic: true
+                });
+            }
+            //console.log(data);
+        });
+        /*$.getJSON("http://localhost:63342/FinalProject/sample/test.json/test.json", function(json) {
+
             var array =  json;
 
-            for(var i = 0; i < array.length; i++){
-              var polyg = array[i].Coord;
+            console.log(array);
 
-              var polygon = new google.maps.Polygon({
-                map: map,
-                path: polyg,
-                geodesic: true,
-                strokeColor: '#FF0000',
-                strokeOpacity: 1.0,
-                strokeWeight: 2,
-                geodesic: true
-              });
+            for(var i = 0; i < array.length; i++){
+                var polyg = array[i].Coord;
+
+                var polygon = new google.maps.Polygon({
+                  map: map,
+                  path: polyg,
+                  geodesic: true,
+                  strokeColor: '#FF0000',
+                  strokeOpacity: 1.0,
+                  strokeWeight: 2,
+                  geodesic: true
+                });
             }
         });
 
-
-        var poly = [
-          {
+            var poly = [
+            {
             lng: -97.3,
             lat: 37.6
-          },
-          {
+            },
+            {
             lng: -97.3,
             lat: 37.5
-          },
-          {
+            },
+            {
             lng: -97.4,
             lat: 37.5
-          },
+            },
 
-          {
+            {
             lng: -97.4,
             lat: 37.6
-          }
-        ]
-        console.log(poly);
-        var polygonk = new google.maps.Polygon({
-          map: map,
-          path: poly,
-          geodesic: true,
-          strokeColor: '#FF0000',
-          strokeOpacity: 1.0,
-          strokeWeight: 2,
-          draggable: true,
-          geodesic: true
-        });
+            }
+            ]
 
+            var polygonk = new google.maps.Polygon({
+            map: map,
+            path: poly,
+            geodesic: true,
+            strokeColor: '#FF0000',
+            strokeOpacity: 1.0,
+            strokeWeight: 2,
+            draggable: true,
+            geodesic: true
+            });
+        */
        }
 
     </script>
