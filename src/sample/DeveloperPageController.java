@@ -1,6 +1,8 @@
 package sample;
 
+import java.awt.*;
 import java.io.*;
+import java.net.URI;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -9,9 +11,12 @@ import com.teamdev.jxbrowser.chromium.events.*;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Paint;
 import javafx.stage.FileChooser;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.*;
@@ -45,9 +50,11 @@ public class DeveloperPageController implements Initializable{
     public BrowserInitializer bi;
     public ImageView fileImage1;
     public Label fileLabel1;
+    public ImageView rendering;
     FileChooser fileChooser;
     Stage stage;
     Connection dbcon;
+    Image highlightedImage;
 
     @FXML
     public Button minimize;
@@ -66,16 +73,17 @@ public class DeveloperPageController implements Initializable{
 
     @Override
     public void initialize(URL url, ResourceBundle rb){
+        fileChooser = new FileChooser();
+        browser = browserView.getBrowser();
+        browser.loadURL("file:C:/code/Java/FinalProject/src/sample/googlemaps.html");
+        run();
+
         try {
             dbcon = DriverManager.getConnection("jdbc:mysql://db4free.net:3306/parceldb", "abrhuerta", "Green123");
             System.out.println("Connected to db");
         }catch (Exception e){
             System.out.println(e);
         }
-        fileChooser = new FileChooser();
-        browser = browserView.getBrowser();
-        browser.loadURL("file:C:/code/Java/FinalProject/src/sample/googlemaps.html");
-        run();
 
     }
 
@@ -130,52 +138,45 @@ public class DeveloperPageController implements Initializable{
         File file = fileChooser.showOpenDialog(stage);
         if (file != null) {
             openFile(file);
-        }
-        try {
-            if (!fileLabel1.getText().equals("No Files")) {
-                ImageView imageView = new ImageView();
-                imageView.setFitHeight(50);
-                imageView.setFitWidth(50);
-                Label label = new Label();
-                label.setPadding(new Insets(20,0,0,10));
-                HBox hbox = new HBox();
-                hbox.getChildren().add(0,imageView);
-                hbox.getChildren().add(1,label);
-                label.setText(file.getName());
-                Image image = new Image(file.toURI().toString());
-                imageView.setImage(image);
-                vbox.getChildren().add(vbox.getChildren().size(), hbox);
-                String filepath;
-                if(vbox.getChildren().size() == 2){
-                    filepath = "`FilePath1`";
-                }else{
-                    filepath = "`FilePath1`";
-                }
-                try{
-                    dbcon.createStatement().executeQuery("UPDATE `Parcel` SET "+filepath+"=" + file.toURI().toString() + " WHERE `ParcelID` = "+ id.getText());
-                }
-                catch (Exception e){
-                    System.out.println(e);
-                }
-
-            } else {
-                fileLabel1.setText(file.getName());
-                Image image = new Image(file.toURI().toString());
-                fileImage1.setImage(image);
-                try{
-                    dbcon.createStatement().executeQuery("UPDATE `Parcel` SET `FilePath1`=" + file.toURI().toString() + " WHERE `ParcelID` = "+ id.getText());
-                }
-                catch (Exception e){
-                    System.out.println(e);
-                }
+            String filepath;
+            if(vbox.getChildren().size() == 1){
+                filepath = "`FilePath2`";
+            }else if(vbox.getChildren().size() == 2){
+                filepath = "`FilePath2`";
+            }else{
+                filepath = "`FilePath3`";
+            }
+            try{
+                dbcon.createStatement().executeUpdate("UPDATE `Parcel` SET "+filepath+"=\"" + file.toURI().toString() + "\" WHERE `ParcelID` = "+ id.getText());
+            }
+            catch (Exception e){
+                System.out.println(e);
             }
         }
-        catch (Exception e){
-            System.out.println(e);
-        }
+
+
     }
 
-    public void preview(ActionEvent actionEvent) {
+    public void preview(ActionEvent actionEvent)
+    {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader();
+            fxmlLoader.setLocation(getClass().getResource("renderView.fxml"));
+            Stage stage = new Stage();
+            stage.setTitle("Rendering");
+            stage.setScene(new Scene(fxmlLoader.load(), 450, 450));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+
+                Image image = new Image(highlightedImage.getUrl());
+                rendering.setImage(image);
+            }
+        });
     }
 
     public void minimize(ActionEvent actionEvent) {
@@ -199,36 +200,73 @@ public class DeveloperPageController implements Initializable{
     }
 
     public void populatePanel(Parcel parcel) {
-        ResultSet result = null;
-        try{
-            result = dbcon.createStatement().executeQuery("SELECT * FROM `Parcel` WHERE `ParcelID` = "+ parcel.id);
-            for(int i = 1; i < 4; i ++){
-                if(!result.getString(i).equals(null)){
-                    File file = new File(result.getString(i));
-                    Image image = new Image(file.toURI().toString());
-                    ((ImageView)vbox.getChildren().get(0)).setImage(image);
-                    ((Label)vbox.getChildren().get(1)).setText(file.getName());
-                }else{
-                    break;
-                }
-            }
-        }
-        catch (Exception e){
-            System.out.println(e);
-        }
+
         Platform.runLater(new Runnable() {
             @Override public void run() {
                 id.setText(String.valueOf(parcel.id));
+                number.setText(String.valueOf(vbox.getChildren().size()));
+
+                try{
+                    ResultSet result = dbcon.createStatement().executeQuery("SELECT * FROM `Parcel` WHERE `ParcelID` = "+ parcel.id + " LIMIT 1");
+                    if(result.next()){
+                        for (int i = 0; i < 3; i++) {
+                            try {
+                                String pathName = result.getString(i+2);
+                                File file = new File(URI.create(pathName));
+                                System.out.println(file.toURI().toString());
+                                openFile(file);
+                            }catch (NullPointerException n){
+                                if(i == 0){
+                                    ClearFiles();
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+                catch (Exception e){
+                    System.out.println(e);
+                }
             }
         });
     }
 
+    private void ClearFiles() {
+        if(vbox.getChildren().size() > 1){
+            vbox.getChildren().remove(1);
+        }
+        fileImage1.setImage(null);
+        fileLabel1.setText("No Files");
+    }
+
     private void openFile(File file){
-        try{
-            System.out.println(file.getCanonicalPath());
+        try {
+            if (!fileLabel1.getText().equals("No Files")) {
+                ImageView imageView = new ImageView();
+                imageView.setFitHeight(50);
+                imageView.setFitWidth(50);
+                Label label = new Label();
+                label.setPadding(new Insets(20,0,0,10));
+                HBox hbox = new HBox();
+                hbox.getChildren().add(0,imageView);
+                hbox.getChildren().add(1,label);
+                label.setText(file.getName());
+                Image image = new Image(file.toURI().toString());
+                imageView.setImage(image);
+                vbox.getChildren().add(vbox.getChildren().size(), hbox);
+            } else {
+                fileLabel1.setText(file.getName());
+                Image image = new Image(file.toURI().toString());
+                fileImage1.setImage(image);
+            }
         }
         catch (Exception e){
             System.out.println(e);
         }
+    }
+
+    public void highlight(MouseEvent mouseEvent) {
+        ((HBox)mouseEvent.getSource()).setStyle("-fx-background-color: #7f7f7f;");
+        highlightedImage = ((ImageView)((HBox)mouseEvent.getSource()).getChildren().get(0)).getImage();
     }
 }

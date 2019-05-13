@@ -44,7 +44,7 @@
                      <children>
                         <VBox fx:id="vbox" prefHeight="106.0" prefWidth="172.0" style="-fx-background-color: #ffffff;">
                            <children>
-                              <HBox prefHeight="297.0" prefWidth="172.0">
+                              <HBox prefHeight="297.0" prefWidth="172.0" onMouseClicked="#highlight">
                                  <children>
                                     <ImageView fx:id="fileImage1" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" />
                                     <Label fx:id="fileLabel1" text="No Files">
