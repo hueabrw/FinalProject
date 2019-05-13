@@ -67,7 +67,7 @@ public class DeveloperPageController implements Initializable{
     @Override
     public void initialize(URL url, ResourceBundle rb){
         try {
-            dbcon = DriverManager.getConnection("https://www.db4free.net/phpMyAdmin/db_structure.php?server=1&db=parceldb", "abrhuerta", "Green123");
+            dbcon = DriverManager.getConnection("jdbc:mysql://db4free.net:3306/parceldb", "abrhuerta", "Green123");
             System.out.println("Connected to db");
         }catch (Exception e){
             System.out.println(e);
@@ -145,11 +145,29 @@ public class DeveloperPageController implements Initializable{
                 Image image = new Image(file.toURI().toString());
                 imageView.setImage(image);
                 vbox.getChildren().add(vbox.getChildren().size(), hbox);
+                String filepath;
+                if(vbox.getChildren().size() == 2){
+                    filepath = "`FilePath1`";
+                }else{
+                    filepath = "`FilePath1`";
+                }
+                try{
+                    dbcon.createStatement().executeQuery("UPDATE `Parcel` SET "+filepath+"=" + file.toURI().toString() + " WHERE `ParcelID` = "+ id.getText());
+                }
+                catch (Exception e){
+                    System.out.println(e);
+                }
 
             } else {
                 fileLabel1.setText(file.getName());
                 Image image = new Image(file.toURI().toString());
                 fileImage1.setImage(image);
+                try{
+                    dbcon.createStatement().executeQuery("UPDATE `Parcel` SET `FilePath1`=" + file.toURI().toString() + " WHERE `ParcelID` = "+ id.getText());
+                }
+                catch (Exception e){
+                    System.out.println(e);
+                }
             }
         }
         catch (Exception e){
@@ -181,6 +199,23 @@ public class DeveloperPageController implements Initializable{
     }
 
     public void populatePanel(Parcel parcel) {
+        ResultSet result = null;
+        try{
+            result = dbcon.createStatement().executeQuery("SELECT * FROM `Parcel` WHERE `ParcelID` = "+ parcel.id);
+            for(int i = 1; i < 4; i ++){
+                if(!result.getString(i).equals(null)){
+                    File file = new File(result.getString(i));
+                    Image image = new Image(file.toURI().toString());
+                    ((ImageView)vbox.getChildren().get(0)).setImage(image);
+                    ((Label)vbox.getChildren().get(1)).setText(file.getName());
+                }else{
+                    break;
+                }
+            }
+        }
+        catch (Exception e){
+            System.out.println(e);
+        }
         Platform.runLater(new Runnable() {
             @Override public void run() {
                 id.setText(String.valueOf(parcel.id));

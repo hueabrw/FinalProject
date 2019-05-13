@@ -9,10 +9,12 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.DirectoryStream;
+import java.sql.DriverManager;
 import java.util.ArrayList;
 
 
 public class APIConsumer{
+
 
     public void Consume() throws Exception
     {
@@ -85,6 +87,7 @@ public class APIConsumer{
 
         return parcelData;
     }
+
 
     public Coord[] GrabCoord(Object obj){
 
