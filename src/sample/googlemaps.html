@@ -192,25 +192,38 @@
             }
           ]
         });
-
+        var polyArray = new Array(1000);
         var data = JSON.parse(window.jsonData);
-            for(var i = 0; i < data.length; i++){
-                var polyg = data[i].Coord;
+        for(var i = 0; i < data.length; i++){
+            var polyg = data[i].Coord;
 
-                var polygon = new google.maps.Polygon({
-                  map: map,
-                  path: polyg,
-                  geodesic: true,
-                  strokeColor: '#FF0000',
-                  strokeOpacity: 1.0,
-                  strokeWeight: 2,
-                  geodesic: true
-                });
-                polygon.addListener('click', function(event) {
-                  window.PolyInteract.onPolyClick(event.latLng);
-                });
+            var polygon = new google.maps.Polygon({
+              map: map,
+              path: polyg,
+              geodesic: true,
+              strokeColor: '#FF0000',
+              strokeOpacity: 1.0,
+              strokeWeight: 2,
+              geodesic: true
+            });
+
+            polygon.addListener('click', function(event) {
+              window.PolyInteract.onPolyClick(getID(this));
+            });
+
+            var parcel = { pol: polygon.getPaths(), id: i};
+
+            polyArray[i] = parcel;
+        }
+
+        this.getID = function(poly){
+          var paths = poly.getPaths();
+          for(var i = 0; i < polyArray.length; i ++){
+            if(paths.getArray() == polyArray[i].pol.getArray()){
+              return i;
             }
-
+          }
+        }
         /*
         var poly = [
         {
@@ -244,6 +257,7 @@
         });
         */
        }
+
 
     </script>
     <script async defer
